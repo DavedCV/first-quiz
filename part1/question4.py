@@ -48,14 +48,26 @@ WHERE a.age > p.age;
 # Part 4.C: BONUS CHALLENGE! 
 # Write SQL to select the pets that are owned by Bessie and nobody else.
 # The output should be a list of tuples in the format: (<person name>, <pet name>, <species>)
+
+# Supposing we have the id of bessie directly
+# 
+# SELECT p.name, a.name, a.species
+# FROM animals AS a
+#          LEFT JOIN people_animals AS pa1 ON a.animal_id = pa1.pet_id AND pa1.owner_id = 2
+#          LEFT JOIN people_animals AS pa2 ON a.animal_id = pa2.pet_id AND pa2.owner_id != 2
+#          JOIN people p on p.person_id = pa1.owner_id
+# WHERE pa1.owner_id IS NOT NULL
+#   AND pa2.owner_id IS NULL;
+# 
+
 sql_only_owned_by_bessie = """ 
 
 SELECT p.name, a.name, a.species
-FROM animals AS a
-         LEFT JOIN people_animals AS pa1 ON a.animal_id = pa1.pet_id AND pa1.owner_id = 2
-         LEFT JOIN people_animals AS pa2 ON a.animal_id = pa2.pet_id AND pa2.owner_id != 2
-         JOIN people p on p.person_id = pa1.owner_id
-WHERE pa1.owner_id IS NOT NULL
+FROM people_animals AS pa1
+         JOIN people AS p ON pa1.owner_id = p.person_id
+         JOIN animals AS a ON pa1.pet_id = a.animal_id
+         LEFT JOIN people_animals AS pa2 ON a.animal_id = pa2.pet_id AND pa2.owner_id != pa1.owner_id
+WHERE p.name = 'bessie'
   AND pa2.owner_id IS NULL;
 
 """
